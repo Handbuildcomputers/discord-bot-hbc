@@ -11,7 +11,7 @@ from datetime import datetime
 import threading 
 from database import *
 import time
-
+# Add comment to test something
 
 # Prestashop
 prestashop = PrestaShopWebServiceDict(secure.WEBSHOP_URL,
