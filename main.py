@@ -21,7 +21,7 @@ prestashop = PrestaShopWebServiceDict(secure.WEBSHOP_URL,
 intents = disnake.Intents.all()
 bot = commands.Bot(intents=intents)
 
-
+# Getting things ready
 @bot.event
 async def on_ready():
     await bot.change_presence(activity=disnake.Activity(type=disnake.ActivityType.listening , name="/help"))
