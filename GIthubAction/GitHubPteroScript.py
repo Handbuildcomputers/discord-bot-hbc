@@ -7,7 +7,7 @@ import time
 # Loading envirement keys
 load_dotenv()
 
-# Get the gamemanager URL and API key
+# Get the gamemanager URL and API-key
 gamemanager_url = os.getenv("gamemanager_ptero_url")
 gamemanager_client_password = os.getenv("client_api_key")
 
