@@ -33,6 +33,7 @@ async def on_ready():
 bot.load_extension("cogs.tickets")  
 bot.load_extension("cogs.help_menu")  
 bot.load_extension("cogs.webstore-commands")  
+bot.load_extension("cogs.guild-management")  
 
 
 

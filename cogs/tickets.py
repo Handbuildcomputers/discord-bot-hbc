@@ -6,6 +6,8 @@ import random
 import asyncio
 
 TICKET_ROLE_ID = 1055220848874750063
+HBC_LOGO = "https://handbuildcomputers.nl/img/logo-1672480433.jpg"
+
 
 class tickets(commands.Cog):
     def __init__(self, bot: commands.Bot):
@@ -69,7 +71,7 @@ class tickets(commands.Cog):
         @ticket.sub_command(description="Krijg informatie over je ticket")
         async def informatie(inter, id:int):
             if validate_ticket_id(id) != True:
-                inter.response.send_message("ID is niet bij ons bekend!", ephemeral=True)
+                await inter.response.send_message("ID is niet bij ons bekend!", ephemeral=True)
             else:
                 embed = ticket_embed(type="informatie", id=id)
                 inter.response.send_message(embed=embed, ephemeral=True)
@@ -79,7 +81,7 @@ class tickets(commands.Cog):
         @ticket.sub_command(description="Zie al jouw tickets! met de status 'Open/wordt aan gewerkt'")
         async def al_jouw_tickets(inter):
             if validate_user_in_db(inter) != True:
-                inter.response.send_message("Je hebt geen tickets momenteel bij ons!", ephemeral=True)
+                await inter.response.send_message("Je hebt geen tickets momenteel bij ons!", ephemeral=True)
             else:
                 embed = get_all_open_or_wop_tickets(inter)
                 await inter.response.send_message(embed=embed, ephemeral=True)
@@ -89,7 +91,7 @@ class tickets(commands.Cog):
         @ticket.sub_command(description="Verwijder een ticket als je ticket-maken of ticket-handler bent!")
         async def verwijder(inter, id:int):
             if validate_ticket_id(id) !=  True:
-                inter.response.send_message("ID is niet bij ons bekend!", ephemeral=True)
+                await inter.response.send_message("ID is niet bij ons bekend!", ephemeral=True)
             else:
                 if validate_permissions(inter, id=id) != 1 or 0:
                     await inter.response.send_message("Ongeldige permissies!", ephemeral=True)
@@ -103,7 +105,7 @@ class tickets(commands.Cog):
         @ticket.sub_command(description="Verander de ticket status (ticket-handler only)")
         async def status(inter, id:int):
             if validate_ticket_id(id) !=  True:
-                inter.response.send_message("ID is niet bij ons bekend!", ephemeral=True)
+                await inter.response.send_message("ID is niet bij ons bekend!", ephemeral=True)
             else:
                 if validate_permissions(inter, id=id) != 1:
                     await inter.response.send_message("Ongeldige permissies! Dit command is voor ticket-behandelaars!", ephemeral=True)
@@ -115,7 +117,7 @@ class tickets(commands.Cog):
         @ticket.sub_command(description="Wijs een ticket aan jezelf toe (ticket-handler only)")
         async def toewijzen(inter, id:int):
             if validate_ticket_id(id) !=  True:
-                inter.response.send_message("ID is niet bij ons bekend!", ephemeral=True)
+                await inter.response.send_message("ID is niet bij ons bekend!", ephemeral=True)
             else:
                 if ticket_handler_validate(inter):
                     await inter.response.send_message("Ongeldige permissies! Dit command is voor ticket-behandelaars!", ephemeral=True)
@@ -157,7 +159,7 @@ class tickets(commands.Cog):
 
             user_maker = bot.get_user(res[4])
             if res[5] != "Geen":
-                ticket_handler = bot.get_user(res[5]).mention
+                ticket_handler = res[5]
             else:
                 ticket_handler = "Geen"
 
@@ -167,7 +169,7 @@ class tickets(commands.Cog):
             embed.add_field(name="Status:", value=res[3], inline=False)  
             embed.add_field(name="Ticket maker:", value=user_maker.mention, inline=False)  
             embed.add_field(name="Ticket behandelaar:", value=ticket_handler, inline=False)  
-            embed.set_footer(text="Let op, onthoudt je ticket-id goed!",icon_url="https://handbuildcomputers.nl/img/logo-1668156510.jpg")
+            embed.set_footer(text="Let op, onthoudt je ticket-id goed!",icon_url=HBC_LOGO)
             return embed
 
 
@@ -181,7 +183,7 @@ class tickets(commands.Cog):
             for entry in res:
                 embed.add_field(name=f"Probleem: {entry[0]}", value=f"ID: {entry[1]} - Status: {entry[2]}", inline=False)  
 
-            embed.set_footer(text="Door het HBC team",icon_url="https://handbuildcomputers.nl/img/logo-1668156510.jpg")
+            embed.set_footer(text="Door het HBC team",icon_url=HBC_LOGO)
             return embed
 
 
@@ -195,7 +197,7 @@ class tickets(commands.Cog):
             for entry in res:
                 embed.add_field(name=f"Probleem: {entry[0]}", value=f"ID: {entry[1]} - Status: {entry[2]}", inline=False)  
 
-            embed.set_footer(text="Door het HBC team",icon_url="https://handbuildcomputers.nl/img/logo-1668156510.jpg")
+            embed.set_footer(text="Door het HBC team",icon_url=HBC_LOGO)
             return embed            
 
 
@@ -203,7 +205,8 @@ class tickets(commands.Cog):
         # Checks if a ticket id excist
         def validate_ticket_id(id):
             Database.cursor.execute(f"SELECT id FROM tickets WHERE id={id}")
-            res = Database.cursor.fetchall()[0]
+            res = Database.cursor.fetchall()
+            print(res)
             if res == []:
                 return False
             else:
@@ -296,7 +299,7 @@ class tickets(commands.Cog):
                     async def callback(self, inter: disnake.MessageInteraction):
 
                             Database.cursor.execute(f"UPDATE tickets SET status='{self.values[0]}' WHERE id={id}")
-                            Database.cursor.execute(f"UPDATE tickets SET behandelaar='{inter.author.name}' WHERE id={id}")
+                            Database.cursor.execute(f"UPDATE tickets SET behandelaar='{inter.author.nick}' WHERE id={id}")
                             Database.db.commit()
                             Database.db.commit()
 
@@ -333,7 +336,7 @@ class tickets(commands.Cog):
                     embed.add_field(name="Probleem:", value=f'{issue}', inline=False)  
                     embed.add_field(name="URL:", value=f'{url}', inline=False)  
                     embed.add_field(name="Aangemaakt door:", value=f'{inter.author.name}', inline=False)  
-                    embed.set_footer(text="Door het HBC team",icon_url="https://handbuildcomputers.nl/img/logo-1668156510.jpg")
+                    embed.set_footer(text="Door het HBC team",icon_url=HBC_LOGO)
 
                     await user_to_send.send(embed=embed)
 
@@ -342,14 +345,15 @@ class tickets(commands.Cog):
 
 
         # Send dm for ticket status change to ticket-owner
-        async def ticket_status_msg(inter, id):
+        async def ticket_status_msg(inter, id, type):
             result = get_ticket(id)[0]
+            print(result)
             user_to_send = bot.get_user(result[4])
             embed = disnake.Embed(title=f"Ticket wijziging!", description=f"**ID: {id}**", color=0x4793FF)
             embed.add_field(name="Probleem:", value=result[1], inline=False)  
             embed.add_field(name="Nieuwe status:", value=result[3], inline=False)  
-            embed.add_field(name="Ticket behandelaar:", value=bot.get_user(result[5]).name, inline=False)  
-            embed.set_footer(text="Door het HBC team",icon_url="https://handbuildcomputers.nl/img/logo-1668156510.jpg")
+            embed.add_field(name="Ticket behandelaar:", value=result[5], inline=False)  
+            embed.set_footer(text="Door het HBC team",icon_url=HBC_LOGO)
             await user_to_send.send(embed=embed)
 
 
