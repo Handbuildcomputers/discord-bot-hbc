@@ -25,7 +25,7 @@ jobs:
         pip install py-dactyl
         pip install python-dotenv==0.17.1
     - name: Creating DotEnv
-      working-directory: ./GithubAction    
+      working-directory: ./GitHubAction    
       run: |
         echo gamemanager_ptero_url=${{secrets.GAMEMANAGER_PTERO_URL}} >> ./.env
         echo client_api_key="${{secrets.CLIENT_API_KEY}}" >> ./.env
