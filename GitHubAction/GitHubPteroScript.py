@@ -15,7 +15,7 @@ gamemanager_client_password = os.getenv("client_api_key")
 api = PterodactylClient(gamemanager_url, gamemanager_client_password)
 
 # Assigning server ID
-SERVER_ID = "85f1e776"
+SERVER_ID = "8ec73c19"
 
 # Killing the individual server
 api.client.servers.send_power_action(SERVER_ID, "kill")
